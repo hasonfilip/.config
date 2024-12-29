@@ -6,6 +6,9 @@
 !cava/
 !cava/**
 
+!khal/
+!khal/**
+
 !fastfetch/
 !fastfetch/**
 

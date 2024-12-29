@@ -79,7 +79,9 @@ plugins=(
 	zsh-autosuggestions
 )
 
+fpath+=${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions/src
 source $ZSH/oh-my-zsh.sh
+source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 # User configuration
 
@@ -96,9 +98,9 @@ else
 fi
 
 export LD_PRELOAD=""
-export PATH="$HOME/bin:/usr/lib/ccache/bin/:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:/opt/bin:/usr/bin/core_perl:/usr/games/bin:$HOME/.dotnet/tools:$PATH"
+export PATH="$HOME/bin:/usr/lib/ccache/bin/:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:/opt/bin:/usr/bin/core_perl:/usr/games/bin:/usr/lib/ruby/gems/3.3.0:/home/lika/.local/share/gem/ruby/3.3.0:/home/lika/.local/share/gem/ruby/3.3.0/bin:$HOME/.dotnet/tools:$PATH"
 export $(dbus-launch)
-eval $(thefuck --alias f)
+# eval $(thefuck --alias f)
 
 # Compilation flags
 # export ARCHFLAGS="-arch x86_64"
@@ -122,9 +124,22 @@ compinit
 _comp_options+=(globdots) # hidden files are included
 
 
+delete-argument() {
+    local CURSOR_POS=$CURSOR
+    zle backward-kill-word # Delete the last word
+    while [[ $CURSOR -gt 0 && ${BUFFER[$CURSOR]} != ' ' ]]; do
+        zle backward-delete-char
+    done
+    CURSOR=$CURSOR_POS
+}
+
+zle -N delete-argument
+
+
 # ------------------#
 #    keybindings    #
 # ------------------#
+bindkey -r '\el'                                                # Unbind Alt + l (does ls<enter> otherwise)
 bindkey "^[k" autosuggest-execute                               # Alt+k to accept autosuggestion
 bindkey -e
 bindkey '^[[7~' beginning-of-line                               # Home key
@@ -150,6 +165,7 @@ bindkey '^[Od' backward-word                                    #
 bindkey '^[[1;5D' backward-word                                 #
 bindkey '^[[1;5C' forward-word                                  #
 bindkey '^H' backward-kill-word                                 # delete previous word with ctrl+backspace
+bindkey '^[d' delete-argument                                   # delete WORD with alt+d
 bindkey '^[[Z' undo                                             # Shift+tab undo last action
 
 
@@ -164,9 +180,26 @@ sa() { eval `ssh-agent`; KEY=${1:-~/.ssh/gw_key};	ssh-add $KEY; }
 vol() { amixer set Master $1%; }
 jas() {
   xrandr \
-    --output $(xrandr --listactivemonitors | tail -n 1 | xargs | cut -d " " -f 4) \
-    --brightness $1 
+    --output $(xrandr --listmonitors | awk '/eDP/ {print $4}') \
+    --brightness $1 2>/dev/null || echo "eDP not found"
+  xrandr \
+    --output $(xrandr --listmonitors | awk '/HDMI/ {print $4}') \
+    --brightness $1 2>/dev/null || echo "HDMI not found"
   }
+wprnd() { feh --bg-fill --randomize $(file ./* | awk -F '[,:] ' '{split($(NF-1), res, 'x'); if (int(res[1]) > int(res[2])) print $1}') }
+# brb() { 
+#   i3lock -efki ~/Pictures/Wallpapers/lockscreen.png && sudo zzz -z
+# }
+notes() {
+  if [ $1 = "-e" ]; then
+    nvim ~/Notes/commands/$2
+    return 0
+  fi
+  cat ~/Notes/commands/$1
+}
+c() {
+  cc $1 -o a.out && ./a.out
+}
 
 # ------------------#
 #      aliases      #
@@ -178,24 +211,29 @@ alias camera='qv4l2 &!'
 # ----------------- #
 alias yay="paru"
 alias htop="btop"
-alias docker="podman"
+# alias docker="podman"
 # ----------------- #
 alias mps="mplayer -nosound"
 alias fh="feh"
 alias vivaldi="vivaldi-snapshot"
-alias viv="nohup vivaldi-snapshot &> ~/.temp/nohup &!"
-alias rs="redshift &"
+alias viv="vivaldi-snapshot"
+# alias viv="nohup vivaldi-snapshot &> ~/.temp/nohup &!"
+alias rs="redshift &!"
 alias prolog="swipl"
 alias hx="helix"
 alias btc="bluetoothctl"
+alias gdl="gallery-dl"
 alias down="nmcli device disconnect wlan0"
 alias pip="python3 -m pip"
 alias odump="objdump -d a.out"
 alias gs="git status"
 alias :wq="exit"
 alias ls7="ls"
+alias nivm="nvim"
+alias mna="man"
 alias cd..="cd .."
 alias sl="ls --color=auto"
+# alias wide="file ./* | awk -F '[,:] ' '{split($(NF-1), res, "x"); if (int(res[1]) > int(res[2])) print $1}'"
 # ----------------- #
 alias ip="ip -c"
 alias ls="ls --color=auto"
@@ -206,6 +244,8 @@ alias du="du -h"
 # ----------------- #
 alias wp="~/Skripty/.wp.sh"
 alias brb="i3lock -efki ~/Pictures/Wallpapers/lockscreen.png && sudo zzz -z"
+alias rst="sudo /etc/zzz.d/resume/restore-brt.sh"
+alias get-input="/home/lika/Skripty/Advent-of-Code/fetch_input_today.sh"
 # sudo /bin/nvidia-sleep.sh hibernate && sudo loginctl hibernate
 # ----------------- #
 alias zrc="nvim ~/.zshrc"
@@ -217,7 +257,7 @@ alias ok="echo 'K.'"
 alias kdo="echo 'se ptal?'"
 alias cool="echo 'ikr?'"
 # ----------------- #
-alias mountd="sudo mount -t ntfs3 /dev/sd?5 ~/Mounts/D"
+alias mountd="sudo mount -t ntfs /dev/sd?5 ~/Mounts/D"
 alias umountd="sudo umount ~/Mounts/D"
 alias mounte="sudo mount /dev/sd?6 ~/Mounts/E"
 alias umounte="sudo umount ~/Mounts/E"
@@ -225,3 +265,6 @@ alias umounte="sudo umount ~/Mounts/E"
 alias reboot="sudo reboot"
 alias shutdown="sudo poweroff"
 alias poweroff="sudo poweroff"
+
+# Created by `pipx` on 2024-12-22 20:27:17
+export PATH="$PATH:/home/lika/.local/bin"
