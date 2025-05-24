@@ -177,7 +177,14 @@ ck() { cd $1 && ls --color; }
 rl() { rm $1 && ls --color; }
 sz() { du -h --max-depth=1 "${1:-./}" | sort -rh | head -n 11; }
 sa() { eval `ssh-agent`; KEY=${1:-~/.ssh/gw_key};	ssh-add $KEY; }
-vol() { amixer set Master $1%; }
+mic() { pactl set-source-mute @DEFAULT_SOURCE@ toggle}
+vol() { 
+  if (( $1 > 160 )); then 
+    echo "Please don't."; 
+    return 1; 
+  fi
+  pactl set-sink-volume @DEFAULT_SINK@ $1%;
+}
 jas() {
   xrandr \
     --output $(xrandr --listmonitors | awk '/eDP/ {print $4}') \

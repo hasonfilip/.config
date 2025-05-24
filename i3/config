@@ -17,22 +17,28 @@ font pango:monospace 8
 # text rendering and scalability on retina/hidpi displays (thanks to pango).
 #font pango:DejaVu Sans Mono 8
 
+
+# mouse_warping none
+
 # exec ~/Skripty/check_battery.sh
 exec --no-startup-id feh --bg-fill ~/Pictures/Wallpapers/artix.webp
+# exec --no-startup-id feh --bg-fill ~/Pictures/Wallpapers/2035034.jpg ~/Pictures/Wallpapers/2035025.jpg
 exec picom
 # exec_always autotiling
 
 exec --no-startup-id xinput set-prop "MSFT0001:00 06CB:CE2D Touchpad" "libinput Tapping Enabled" 1
-exec --no-startup-id greenclip daemon
-bindsym $mod+v exec rofi -modi "clipboard:greenclip print" -show clipboard -run-command '{cmd}'
+# exec --no-startup-id greenclip daemon
+exec --no-startup-id clipcatd
+# bindsym $mod+v exec rofi -modi "clipboard:greenclip print" -show clipboard -run-command '{cmd}'
+bindsym $mod+v exec clipcat-menu
 bindsym $mod+Shift+a exec rofi-screenshot
 bindsym $mod+Shift+d exec rofi-screenshot -s
 bindsym $mod+Shift+s exec flameshot gui -r | xclip -selection clipboard -t image/png
 bindsym Print exec ~/Skripty/screenshot.sh
 #bindsym $mod+Shift+s exec xfce4-screenshooter -cr | xclip -selection clipboard -t image/png
 #bindsym Print exec xfce4-screenshooter -cf | xclip -selection clipboard -t image/png
-bindsym $mod+grave exec timeout 1s highlight-pointer --pressed-color "#ff0000" --radius 40
-
+bindsym $mod+grave exec /home/lika/Skripty/cursor_screen_toggle.sh
+bindsym $mod+Shift+grave exec timeout 1s highlight-pointer --pressed-color "#000000" --radius 40
 gaps inner 6px
 
 default_border pixel 2
@@ -71,7 +77,8 @@ floating_modifier $mod
 tiling_drag modifier titlebar
 
 # start a terminal
-bindsym $mod+Return exec i3-sensible-terminal
+# bindsym $mod+Return exec i3-sensible-terminal
+bindsym $mod+Return exec kitty
 
 # kill focused window
 bindsym $mod+Shift+q kill
@@ -231,7 +238,8 @@ assign [class="^[Ll]utris"] $ws4
 assign [class="^[Vv]esktop"] $ws13
 
 #exec --no-startup-id i3-msg 'workspace 1; exec /usr/bin/firefox'
-exec i3-sensible-terminal
+# exec i3-sensible-terminal
+exec kitty
 exec vivaldi-snapshot
 exec lutris
 exec vesktop
