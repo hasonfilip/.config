@@ -153,15 +153,15 @@ set $ws7 "7"
 set $ws8 "8"
 set $ws9 "9"
 set $ws10 "10"
-set $ws11 "Z"
-set $ws12 "X"
-set $ws13 "C"
-set $ws14 "T"
-set $ws15 "Y"
-set $ws16 "U"
-set $ws17 "I"
-set $ws18 "O"
-set $ws19 "P"
+set $ws11 "11"
+set $ws12 "12"
+set $ws13 "13"
+set $ws14 "14"
+set $ws15 "15"
+set $ws16 "16"
+set $ws17 "17"
+set $ws18 "18"
+set $ws19 "19"
 
 # cycle through workspaces
 bindsym $mod+Tab workspace next
@@ -235,6 +235,8 @@ workspace $ws19 output eDP-1 eDP-1-0 eDP
 assign [class="^[Vv]ivaldi"] $ws2
 # assign [class="^[Ff]irefox$"] $ws3
 assign [class="^[Ll]utris"] $ws4
+assign [class="steam"] $ws4
+assign [class="steam_app_2808930"] $ws4
 assign [class="^[Vv]esktop"] $ws13
 
 #exec --no-startup-id i3-msg 'workspace 1; exec /usr/bin/firefox'
